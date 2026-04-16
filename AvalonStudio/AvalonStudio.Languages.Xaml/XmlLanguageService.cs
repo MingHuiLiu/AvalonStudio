@@ -1,6 +1,7 @@
 using AvalonStudio.Documents;
 using AvalonStudio.Editor;
 using AvalonStudio.Extensibility.Languages.CompletionAssistance;
+using AvalonStudio.Languages;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -133,6 +134,11 @@ namespace AvalonStudio.Languages.Xaml
         public IEnumerable<IContextActionProvider> GetContextActionProviders()
         {
             return Enumerable.Empty<IContextActionProvider>();
+        }
+
+        public Task<IEnumerable<CodeLens>> GetCodeLensAsync(System.Threading.CancellationToken cancellationToken = default)
+        {
+            return Task.FromResult(Enumerable.Empty<CodeLens>());
         }
     }
 }

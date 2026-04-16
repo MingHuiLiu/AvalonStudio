@@ -1060,5 +1060,86 @@ namespace AvalonStudio.Languages.CSharp
                  new RoslynContextActionProvider(workspace, service)
              };
         }
+
+        public async Task<IEnumerable<CodeLens>> GetCodeLensAsync(CancellationToken cancellationToken = default)
+        {
+            if (_editor?.SourceFile is MetaDataFile)
+                return Enumerable.Empty<CodeLens>();
+
+            var dataAssociation = GetAssociatedData(_editor);
+
+            var document = GetDocument(dataAssociation, _editor.SourceFile);
+            if (document == null)
+                return Enumerable.Empty<CodeLens>();
+
+            var result = new List<CodeLens>();
+
+            var syntaxRoot = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
+            var semanticModel = await document.GetSemanticModelAsync(cancellationToken).ConfigureAwait(false);
+            if (syntaxRoot == null || semanticModel == null)
+                return result;
+
+            var workspace = RoslynWorkspace.GetWorkspace(dataAssociation.Solution);
+
+            // Collect named type, method, property, field, and event declarations
+            var declarations = syntaxRoot.DescendantNodes().Where(n =>
+                n is Microsoft.CodeAnalysis.CSharp.Syntax.ClassDeclarationSyntax ||
+                n is Microsoft.CodeAnalysis.CSharp.Syntax.InterfaceDeclarationSyntax ||
+                n is Microsoft.CodeAnalysis.CSharp.Syntax.StructDeclarationSyntax ||
+                n is Microsoft.CodeAnalysis.CSharp.Syntax.EnumDeclarationSyntax ||
+                n is Microsoft.CodeAnalysis.CSharp.Syntax.MethodDeclarationSyntax ||
+                n is Microsoft.CodeAnalysis.CSharp.Syntax.PropertyDeclarationSyntax ||
+                n is Microsoft.CodeAnalysis.CSharp.Syntax.ConstructorDeclarationSyntax);
+
+            foreach (var node in declarations)
+            {
+                if (cancellationToken.IsCancellationRequested) break;
+
+                var symbol = semanticModel.GetDeclaredSymbol(node, cancellationToken);
+                if (symbol == null) continue;
+
+                try
+                {
+                    var refs = await SymbolFinder.FindReferencesAsync(
+                        symbol, workspace.CurrentSolution, cancellationToken).ConfigureAwait(false);
+
+                    int refCount = refs.Sum(r => r.Locations.Count());
+
+                    var lineSpan = node.GetLocation().GetLineSpan();
+                    int lineNumber = lineSpan.StartLinePosition.Line + 1;
+                    int colNumber = lineSpan.StartLinePosition.Character + 1;
+
+                    string label = refCount == 1 ? "1 reference" : $"{refCount} references";
+
+                    var targets = refs
+                        .SelectMany(r => r.Locations)
+                        .Select(l =>
+                        {
+                            var ls = l.Location.GetLineSpan();
+                            return $"{l.Document.FilePath}:{ls.StartLinePosition.Line + 1}:{ls.StartLinePosition.Character + 1}";
+                        })
+                        .ToList();
+
+                    result.Add(new CodeLens
+                    {
+                        Line = lineNumber,
+                        Column = colNumber,
+                        Label = label,
+                        Description = symbol.ToDisplayString(DefaultFormat),
+                        NavigationTargets = targets
+                    });
+                }
+                catch (OperationCanceledException)
+                {
+                    break;
+                }
+                catch
+                {
+                    // Skip symbols that fail reference lookup
+                }
+            }
+
+            return result;
+        }
     }
 }

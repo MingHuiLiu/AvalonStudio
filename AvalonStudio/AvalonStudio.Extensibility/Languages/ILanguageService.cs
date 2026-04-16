@@ -103,5 +103,11 @@ namespace AvalonStudio.Languages
         Task<IEnumerable<SymbolRenameInfo>> RenameSymbol(string renameTo);
 
         Task<List<Symbol>> GetSymbolsAsync(IEnumerable<UnsavedFile> unsavedFiles, string name);
+
+        /// <summary>
+        /// Returns code lens annotations for the currently open document.
+        /// Implementations should return an empty enumerable (not null) if code lens is not supported.
+        /// </summary>
+        Task<IEnumerable<CodeLens>> GetCodeLensAsync(System.Threading.CancellationToken cancellationToken = default);
     }
 }
