@@ -527,5 +527,10 @@ namespace AvalonStudio.LanguageSupport.TypeScript.LanguageService
         {
             return Enumerable.Empty<IContextActionProvider>();
         }
+
+        public Task<IEnumerable<CodeLens>> GetCodeLensAsync(System.Threading.CancellationToken cancellationToken = default)
+        {
+            return Task.FromResult(Enumerable.Empty<CodeLens>());
+        }
     }
 }

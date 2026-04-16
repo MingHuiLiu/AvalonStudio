@@ -5,6 +5,7 @@ using AvalonStudio.Extensibility.Languages.CompletionAssistance;
 using AvalonStudio.Languages;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace AvalonStudio.Controls.Standard.Tests
@@ -105,6 +106,11 @@ namespace AvalonStudio.Controls.Standard.Tests
         public void UnregisterEditor()
         {
             throw new NotImplementedException();
+        }
+
+        public Task<IEnumerable<CodeLens>> GetCodeLensAsync(System.Threading.CancellationToken cancellationToken = default)
+        {
+            return Task.FromResult(Enumerable.Empty<CodeLens>());
         }
     }
 }
