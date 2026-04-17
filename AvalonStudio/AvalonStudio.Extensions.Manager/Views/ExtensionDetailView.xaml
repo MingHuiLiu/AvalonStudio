@@ -1,0 +1,58 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="clr-namespace:AvalonStudio.Extensions.Manager.ViewModels;assembly=AvalonStudio.Extensions.Manager"
+             x:Class="AvalonStudio.Extensions.Manager.Views.ExtensionDetailView">
+
+  <ScrollViewer>
+    <StackPanel Margin="16">
+
+      <!-- Extension title + publisher -->
+      <TextBlock Text="{Binding Extension.DisplayName}"
+                 FontSize="20" FontWeight="Bold"
+                 IsVisible="{Binding Extension, Converter={x:Static ObjectConverters.IsNotNull}}" />
+
+      <TextBlock Text="{Binding Extension.Description}"
+                 TextWrapping="Wrap"
+                 Margin="0,4,0,8"
+                 Foreground="Gray" />
+
+      <!-- Action buttons -->
+      <StackPanel Orientation="Horizontal" Spacing="8" Margin="0,0,0,12">
+        <Button Content="Install"
+                Command="{Binding InstallCommand}"
+                IsVisible="{Binding Extension.IsInstalled, Converter={x:Static BoolConverters.Not}}" />
+
+        <Button Content="Uninstall"
+                Command="{Binding UninstallCommand}"
+                IsVisible="{Binding Extension.IsInstalled}" />
+
+        <Button Content="Enable"
+                Command="{Binding EnableCommand}"
+                IsVisible="{Binding Extension.IsInstalled}" />
+
+        <Button Content="Disable"
+                Command="{Binding DisableCommand}"
+                IsVisible="{Binding Extension.IsInstalled}" />
+      </StackPanel>
+
+      <!-- Install progress -->
+      <ProgressBar Value="{Binding Extension.InstallProgress}"
+                   Maximum="1"
+                   Margin="0,0,0,8"
+                   IsVisible="{Binding Extension.IsInstalling}" />
+
+      <!-- Loading indicator -->
+      <ProgressBar IsIndeterminate="True"
+                   IsVisible="{Binding IsLoading}"
+                   Margin="0,0,0,8" />
+
+      <!-- README -->
+      <TextBlock Text="README" FontWeight="Bold" Margin="0,8,0,4" />
+      <TextBlock Text="{Binding Readme}"
+                 TextWrapping="Wrap"
+                 FontFamily="Monospace"
+                 IsVisible="{Binding Readme, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+
+    </StackPanel>
+  </ScrollViewer>
+</UserControl>
