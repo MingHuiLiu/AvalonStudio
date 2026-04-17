@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <NoWarn>NU1701</NoWarn>
+  </PropertyGroup>
+  <ItemGroup>
+    <AvaloniaResource Include="**\*.resx;**\*.xaml;Assets\*;" Exclude="bin\**;obj\**;**\*.xproj;packages\**;@(EmbeddedResource)" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Avalonia" />
+    <PackageReference Include="ReactiveUI" />
+    <PackageReference Include="System.Text.Json" Version="6.0.0" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\AvalonStudio.Extensibility\AvalonStudio.Extensibility.csproj" />
+    <ProjectReference Include="..\AvalonStudio.Extensions.Installer\AvalonStudio.Extensions.Installer.csproj" />
+    <ProjectReference Include="..\AvalonStudio.Extensions.OpenVSX\AvalonStudio.Extensions.OpenVSX.csproj" />
+    <ProjectReference Include="..\AvalonStudio.Extensions.Host\AvalonStudio.Extensions.Host.csproj" />
+  </ItemGroup>
+</Project>

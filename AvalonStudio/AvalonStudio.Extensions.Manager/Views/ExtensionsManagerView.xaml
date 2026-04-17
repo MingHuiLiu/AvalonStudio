@@ -1,0 +1,56 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="clr-namespace:AvalonStudio.Extensions.Manager.ViewModels;assembly=AvalonStudio.Extensions.Manager"
+             x:Class="AvalonStudio.Extensions.Manager.Views.ExtensionsManagerView">
+
+  <Grid ColumnDefinitions="300,*">
+
+    <!-- Left panel: Search + List -->
+    <Grid Grid.Column="0" RowDefinitions="Auto,Auto,*,Auto">
+
+      <!-- Search box -->
+      <TextBox Grid.Row="0"
+               Margin="8,8,8,4"
+               Watermark="Search extensions..."
+               Text="{Binding SearchText}" />
+
+      <!-- Loading indicator -->
+      <ProgressBar Grid.Row="1"
+                   Margin="8,0,8,4"
+                   IsIndeterminate="True"
+                   IsVisible="{Binding IsSearching}" />
+
+      <!-- Extension list -->
+      <ListBox Grid.Row="2"
+               Items="{Binding SearchResults}"
+               SelectedItem="{Binding SelectedExtension}"
+               Margin="4,0">
+        <ListBox.ItemTemplate>
+          <DataTemplate>
+            <StackPanel Margin="4">
+              <TextBlock Text="{Binding DisplayName}" FontWeight="Bold" />
+              <TextBlock Text="{Binding Description}"
+                         TextWrapping="Wrap"
+                         Foreground="Gray"
+                         FontSize="11" />
+              <TextBlock Text="{Binding Version}" FontSize="10" Foreground="LightGray" />
+            </StackPanel>
+          </DataTemplate>
+        </ListBox.ItemTemplate>
+      </ListBox>
+
+      <!-- Load more button -->
+      <Button Grid.Row="3"
+              Content="Load more"
+              HorizontalAlignment="Center"
+              Margin="8"
+              Command="{Binding LoadMoreCommand}" />
+    </Grid>
+
+    <!-- Right panel: Details -->
+    <Grid Grid.Column="1">
+      <ContentControl Content="{Binding DetailViewModel}" />
+    </Grid>
+
+  </Grid>
+</UserControl>
